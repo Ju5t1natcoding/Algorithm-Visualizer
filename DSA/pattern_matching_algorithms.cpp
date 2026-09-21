@@ -37,3 +37,8 @@ void z_algorithm(std::string& s, std::string& t, std::vector<State>& states) {
     int32_t n = static_cast<int32_t>(s.size()), m = static_cast<int32_t>(t.size());
     ///cod
 }
+
+void aho_corasick(std::string& s, std::string& t, std::vector<State>& states) {
+    int32_t n = static_cast<int32_t>(s.size()), m = static_cast<int32_t>(t.size());
+    ///cod
+}

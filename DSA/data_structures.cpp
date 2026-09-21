@@ -5,6 +5,10 @@ struct State {
     ///cod
 };
 
+void DSU() {
+    ///cod
+}
+
 void heap() {
     ///cod
 }
@@ -21,10 +25,22 @@ void segment_tree() {
     ///cod
 }
 
+void lazy_segment_tree() {
+    ///cod
+}
+
+void persistent_segment_tree() {
+    ///cod
+}
+
 void trie() {
     ///cod
 }
 
 void treap() {
+    ///cod
+}
+
+void splay_tree() { ///implicit treap
     ///cod
 }

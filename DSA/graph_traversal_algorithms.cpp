@@ -1,10 +1,15 @@
 #include <cstdint>
 #include <vector>
 #include <queue>
+#include <deque>
+#include <unordered_set>
+#include <string>
 
 struct State {
     ///cod
 };
+
+const int64_t INF = 1e18;
 
 void bfs(std::vector<std::vector<int32_t>>& g, int32_t s, std::vector<State>& states) {
     int32_t n = static_cast<int32_t>(g.size());
@@ -47,6 +52,61 @@ void dfs(std::vector<std::vector<int32_t>>& g, int32_t s, std::vector<State>& st
     f(f, s);
 }
 
+void bfs_0_1(std::vector<std::vector<std::pair<int32_t, int8_t>>>& g, int32_t s, std::vector<State>& states) {
+    int32_t n = static_cast<int32_t>(g.size());
+    std::deque<int32_t> dq;
+    std::vector<int32_t> dist(n, -1);
+    std::vector<bool> viz(n, false);
+    dist[s] = 0;
+    viz[s] = true;
+    dq.push_back(s);
+
+    while (!dq.empty()) {
+        int32_t x = dq.front();
+        dq.pop_front();
+
+        if (viz[x]) {
+            continue;
+        }
+
+        viz[x] = true;
+        for (auto& [y, c] : g[x]) {
+            if (dist[y] != -1 && dist[y] <= dist[x] + c) {
+                continue;
+            }
+
+            dist[y] = dist[x] + c;
+
+            if (!c) {
+                dq.push_front(y);
+            } else {
+                dq.push_back(y);
+            }
+        }
+    }
+}
+
+void floyd_warshall(std::vector<std::vector<std::pair<int32_t, int64_t>>>& g, std::vector<State>& states) {
+    int32_t n = static_cast<int32_t>(g.size());
+    std::vector<std::vector<int64_t>> dist(n, std::vector<int64_t>(n, INF));
+
+    for (int32_t x = 0; x < n; ++x) {
+        for (auto& [y, c] : g[x]) {
+            dist[x][y] = c;
+        }
+    }
+
+    for (int32_t i = 0; i < n; ++i) {
+        for (int32_t j = 0; j < n; ++j) {
+            for (int32_t k = 0; k < n; ++k) {
+                if (dist[i][k] != INF && dist[k][j] != INF) {
+                    dist[i][j] = std::min(dist[i][j], dist[i][k] + dist[k][j]);
+                }
+            }
+        }
+    }
+}
+
 void dijkstra(std::vector<std::vector<std::pair<int32_t, int64_t>>>& g, int32_t s, std::vector<State>& states) {
     int32_t n = static_cast<int32_t>(g.size());
     std::vector<int64_t> dist(n, -1);
@@ -73,10 +133,143 @@ void dijkstra(std::vector<std::vector<std::pair<int32_t, int64_t>>>& g, int32_t 
 
 void bellman_ford(std::vector<std::vector<std::pair<int32_t, int64_t>>>& g, int32_t s, std::vector<State>& states) {
     int32_t n = static_cast<int32_t>(g.size());
+    std::vector<std::tuple<int32_t, int32_t, int64_t>> mch;
+    std::vector<int64_t> dist(n, INF);
+    dist[s] = 0;
+
+    for (int32_t x = 0; x < n; ++x) {
+        for (auto& [y, c] : g[x]) {
+            mch.push_back(std::make_tuple(x, y, c));
+        }
+    }
+
+    bool infinite_cycle = false;
+    for (int32_t i = 1; i <= n; ++i) {
+        for (auto& [x, y, c] : mch) {
+            if (dist[x] != INF && dist[x] + c < dist[y]) {
+                if (i == n) {
+                    infinite_cycle = true;
+                    break;
+                }
+
+                dist[y] = dist[x] + c;
+            }
+        }
+    }
+}
+
+void dial(std::vector<std::vector<std::pair<int32_t, int32_t>>>& g, int32_t s, std::vector<State>& states) {
+    int32_t n = static_cast<int32_t>(g.size()),  mx = 0; ///max weight on edge
+
+    for (int32_t x = 0; x < n; ++x) {
+        for (auto& [y, c] : g[x]) {
+            mx = std::max(mx, c);
+        }
+    }
+
+    std::vector<int32_t> dist(n, INF);
+    dist[s] = 0;
+    int32_t mx_dist = mx * (n - 1);
+    std::vector<std::unordered_set<int32_t>> bkts(mx_dist + 1);
+    bkts[0].insert(s);
+
+    for (int32_t d = 0; d <= mx; ++d) {
+        while (!bkts[d].empty()) {
+            int32_t x = *bkts[d].begin();
+            bkts[d].erase(bkts[d].begin());
+
+            if (d > dist[x]) {
+                continue;
+            }
+
+            for (auto& [y, c] : g[x]) {
+                if (d + c < dist[y]) {
+                    if (dist[y] != INF) {
+                        bkts[dist[y]].erase(y);
+                    }
+
+                    dist[y] = d + c;
+                    bkts[d + c].insert(y);
+                }
+            }
+        }
+    }
+}
+
+void spfa(std::vector<std::vector<std::pair<int32_t, int64_t>>>& g, int32_t s, std::vector<State>& states) { ///Shortest Path Faster Algorithm
+    int32_t n = static_cast<int32_t>(g.size());
+    std::vector<int64_t> dist(n, INF);
+    std::vector<bool> in(n, false);
+    std::queue<int32_t> q;
+    dist[s] = 0;
+    in[s] = true;
+    q.push(s);
+
+    while (!q.empty()) {
+        int32_t x = q.front();
+        q.pop();
+        in[x] = false;
+
+        for (auto& [y, c] : g[x]) {
+            if (dist[x] + c < dist[y]) {
+                dist[y] = dist[x] + c;
+
+                if (!in[y]) {
+                    q.push(y);
+                    in[y] = true;
+                }
+            }
+        }
+    }
+}
+
+void tarjan_scc(std::vector<std::vector<int32_t>>& g, std::vector<State>& states) {
+    int32_t n = static_cast<int32_t>(g.size()), timp = 0;
+    std::vector<int32_t> disc(n, -1), low(n, -1), st;
+    std::vector<int32_t> in(n, false);
+    std::vector<std::vector<int32_t>> comp;
+
+    auto dfs = [&](auto&& dfs, int x) -> void {
+        disc[x] = low[x] = timp++;
+        st.push_back(x);
+        in[x] = true;
+
+        for (int32_t y : g[x]) {
+            if (disc[y] == -1) {
+                dfs(dfs, y);
+                low[x] = std::min(low[x], low[y]);
+            } else if (in[y]) {
+                low[x] = std::min(low[x], disc[y]);
+            }
+        }
+
+        if (disc[x] == low[x]) {
+            comp.emplace_back();
+
+            while (st.back() != x) {
+                comp.back().push_back(st.back());
+                in[st.back()] = false;
+                st.pop_back();
+            }
+
+            comp.back().push_back(x);
+            in[x] = false;
+            st.pop_back();
+        }
+    };
+
+    for (int32_t i = 0; i < n; ++i) {
+        if (disc[i] == -1) {
+            dfs(dfs, i);
+        }
+    }
+}
+
+void two_SAT(std::string& s, std::vector<State>& states) {
     ///cod
 }
 
-void A_sharp(std::vector<std::vector<std::pair<int32_t, int64_t>>>& g, int32_t s, std::vector<State>& states) { ///A*
+void tarjan_bridge_and_articulation_points(std::vector<std::vector<int32_t>>& g, std::vector<State>& states) {
     int32_t n = static_cast<int32_t>(g.size());
     ///cod
 }
