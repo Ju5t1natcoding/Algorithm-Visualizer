@@ -4,6 +4,9 @@
 #include <deque>
 #include <unordered_set>
 #include <string>
+#include <algorithm>
+#include <unordered_map>
+#include <sstream>
 
 struct State {
     ///cod
@@ -266,7 +269,116 @@ void tarjan_scc(std::vector<std::vector<int32_t>>& g, std::vector<State>& states
 }
 
 void two_SAT(std::string& s, std::vector<State>& states) {
-    ///cod
+    struct term {
+        int32_t id;
+        bool neg;
+
+        int32_t get_nod() {
+            return neg ? (id << 1 | 1) : (id << 1);
+        }
+    };
+
+    auto neg = [](int32_t x) -> int32_t {
+        return x ^ 1;
+    };
+
+    auto to_upper = [](std::string s) -> std::string {
+        std::transform(s.begin(), s.end(), s.begin(), [](char c) { return std::toupper(c); });
+        return s;
+    };
+
+    std::unordered_map<std::string, int32_t> var2id;
+
+    auto get_var_id = [&](const std::string& s) -> int32_t {
+        if (var2id.find(s) == var2id.end()) {
+            var2id[s] = static_cast<int32_t>(var2id.size());
+        }
+
+        return var2id[s];
+    };
+
+    std::string formula = s;
+    for (char& c : formula) {
+        if (c == '(' || c == ')' || c == ',' || c == '^') {
+            c = ' ';
+        }
+    }
+
+    std::string uformula = to_upper(formula);
+    std::stringstream ss(uformula);
+    std::string token;
+    std::vector<std::string> clause_string;
+    std::string curr = "";
+
+    while (ss >> token) {
+        if (token == "AND" || token == "&&") {
+            if (!curr.empty()) {
+                clause_string.push_back(curr);
+                curr = "";
+            }
+        } else {
+            curr += token + " ";
+        }
+    }
+
+    if (!curr.empty()) {
+        clause_string.push_back(curr);
+    }
+
+    struct raw_clause {
+        term t1, t2;
+        bool single; ///only has one term
+    };
+
+    std::vector<raw_clause> parsed_clauses;
+    for (const std::string& c_str : clause_string) {
+        std::stringstream css(c_str);
+        std::vector<std::string> cuv;
+        std::string w;
+
+        while (css >> w) {
+            cuv.push_back(w);
+        }
+
+        if (cuv.empty()) {
+            continue;
+        }
+
+        std::vector<term> terms;
+        for (size_t i = 0; i < cuv.size(); ++i) {
+            if (cuv[i] == "OR" || cuv[i] == "||") {
+                continue;
+            }
+
+            bool is_neg = false;
+
+            while (i < cuv.size() && cuv[i] == "NOT" || cuv[i] == "||") {
+                is_neg = true;
+                i++;
+            }
+            
+            if (cuv[i].rfind("NOT_", 0) == 0 || cuv[i].rfind("!", 0) == 0) {
+                is_neg = true;
+                cuv[i] = cuv[i].substr(cuv[i].find_first_not_of("NOT_!"));
+            }
+
+            if (cuv.empty()) {
+                continue;
+            }
+
+            int32_t id = get_var_id(cuv[i]);
+            terms.push_back({id, is_neg});
+        }
+
+        if (terms.size() == 1) {
+            parsed_clauses.push_back({terms[0], terms[0], true});
+        } else if (terms.size() >= 2) {
+            parsed_clauses.push_back({terms[0], terms[1], false});
+        }
+    }
+
+    int32_t num_var = static_cast<int32_t>(var2id.size());
+    int32_t num_nodes = num_var << 1;
 }
 
 void tarjan_bridge_and_articulation_points(std::vector<std::vector<int32_t>>& g, std::vector<State>& states) {
