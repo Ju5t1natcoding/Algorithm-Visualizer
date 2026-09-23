@@ -273,7 +273,7 @@ void two_SAT(std::string& s, std::vector<State>& states) {
         int32_t id;
         bool neg;
 
-        int32_t get_nod() {
+        int32_t get_node() {
             return neg ? (id << 1 | 1) : (id << 1);
         }
     };
@@ -379,9 +379,102 @@ void two_SAT(std::string& s, std::vector<State>& states) {
 
     int32_t num_var = static_cast<int32_t>(var2id.size());
     int32_t num_nodes = num_var << 1;
+    std::vector<std::vector<int32_t>> g(num_nodes);
+
+    for (auto& clause : parsed_clauses) {
+        int32_t x = clause.t1.get_node();
+
+        if (clause.single) {
+            g[neg(x)].push_back(x);
+        } else {
+            int32_t y = clause.t2.get_node();
+            g[neg(x)].push_back(y);
+            g[neg(y)].push_back(x);
+        }
+    }
+
+    std::vector<int32_t> disc(num_nodes, -1), low(num_nodes, -1), st, scc_id(num_nodes, -1);
+    std::vector<bool> in(num_nodes, false);
+    int32_t timp = 0, scc_counter = 0;
+
+    auto tarjan_dfs = [&](auto&& self, int32_t x) -> void {
+        disc[x] = low[x] = timp++;
+        st.push_back(x);
+        in[x] = true;
+
+        for (int32_t y : g[x]) {
+            if (disc[y] == -1) {
+                self(self, y);
+                low[x] = std::min(low[x], low[y]);
+            } else if (in[y]) {
+                low[x] = std::min(low[x], disc[y]);
+            }
+        }
+
+        if (disc[x] == low[x]) {
+            while (true) {
+                in[st.back()] = false;
+                scc_id[st.back()] = scc_counter;
+                
+                if (st.back() == x) {
+                    st.pop_back();
+                    break;
+                }
+
+                st.pop_back();
+            }
+
+            scc_counter++;
+        }
+    };
+
+    for (int32_t i = 0; i < num_nodes; ++i) {
+        if (disc[i] == -1) {
+            tarjan_dfs(tarjan_dfs, i);
+        }
+    }
+
+    bool ok = true;
+    for (int32_t i = 0; i < num_var; ++i) {
+        int32_t x = i << 1, y = x + 1;
+
+        if (scc_id[x] == scc_id[y]) {
+            ok = false;
+            break;
+        }
+    }
+
+    if (ok) {
+    } else {
+    }
 }
 
 void tarjan_bridge_and_articulation_points(std::vector<std::vector<int32_t>>& g, std::vector<State>& states) {
     int32_t n = static_cast<int32_t>(g.size());
-    ///cod
+    std::vector<int32_t> disc(n, -1), low(n, -1), bridges, art_points;
+    int32_t timp = 0;
+
+    auto dfs = [&](auto&& dfs, int32_t x, int32_t y) -> void {
+        disc[x] = low[x] = timp++;
+        int32_t nrc = 0;
+
+        for (int32_t y : g[x]) {
+            if (y == p) {
+                continue;
+            }
+
+            if (disc[y] != -1) {
+                low[x] = std::min(low[x], disc[y]);
+            } else {
+                dfs(dfs, y, x);
+                low[x] = std::min(low[x], low[y]);
+
+                if (low[y] >= disc[x] && p != -1) {
+                    art_points.push_back(x);
+                }
+            }
+
+            nrc++;
+        }
+    };
 }
