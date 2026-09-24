@@ -30,7 +30,7 @@ void hld(std::vector<std::vector<std::pair<int32_t, int64_t>>>& g, std::vector<S
         }
     };
 
-    auto decomp = [&](auto& decomp, int x, int h) -> void {
+    auto decomp = [&](auto& decomp, int32_t x, int32_t h) -> void {
         head[x] = h;
         poz[x] = ++curr;
 

@@ -1,6 +1,7 @@
 #include <cstdint>
 #include <vector>
 #include <queue>
+#include <algorithm>
 
 struct State {
     ///cod
@@ -112,11 +113,11 @@ void A_sharp(std::vector<std::vector<int32_t>>& a, int32_t xs, int32_t ys, int32
         }
     };
 
-    auto manhattan = [](int32_t i, int32_t j, int32_t x, int32_t y) -> int {
+    auto manhattan = [](int32_t i, int32_t j, int32_t x, int32_t y) -> int32_t {
         return abs(i - x) + abs(j - y);
     };
 
-    auto inmat = [&](int32_t x, int32_t y) {
+    auto inmat = [&](int32_t x, int32_t y) -> bool {
         return 0 <= x && x < n && 0 <= y && y < m;
     };
 
