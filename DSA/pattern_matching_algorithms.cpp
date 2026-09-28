@@ -121,3 +121,7 @@ void z_algorithm(std::string& s, std::string& t, std::vector<State>& states) {
         }
     }
 }
+
+void aho_corasick(std::string& s, std::vector<std::string>& v, std::vector<State>& states) {
+    ///cod
+}

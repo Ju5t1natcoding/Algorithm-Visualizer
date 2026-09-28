@@ -1,0 +1,45 @@
+#include "data_structures.hpp"
+
+struct State {
+    ///cod
+};
+
+void dsu(std::vector<State>& states) {
+    ///cod
+}
+
+void heap() {
+    ///cod
+}
+
+void sparse_table() {
+    ///cod
+}
+
+void fenwick_tree() {
+    ///cod
+}
+
+void segment_tree() {
+    ///cod
+}
+
+void lazy_segment_tree() {
+    ///cod
+}
+
+void persistent_segment_tree() {
+    ///cod
+}
+
+void trie() {
+    ///cod
+}
+
+void treap() {
+    ///cod
+}
+
+void splay_tree() { ///implicit treap
+    ///cod
+}
