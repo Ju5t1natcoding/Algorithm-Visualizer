@@ -32,7 +32,11 @@ void persistent_segment_tree() {
     ///cod
 }
 
-void trie() {
+void trie(const std::vector<std::string>& s, std::vector<State>& states) {
+    ///cod
+}
+
+void binary_trie() {
     ///cod
 }
 

@@ -1,6 +1,9 @@
+#pragma once
 #include <cstdint>
 #include <vector>
 #include <numeric>
+#include <array>
+#include <string>
 
 class DSU {
     std::vector<int32_t> parent, size;
@@ -56,7 +59,21 @@ class Persistent_Segment_Tree {
     ///cod
 };
 
+struct TrieNode {
+    std::array<int32_t, 26> nxt;
+    bool terminal_node;
+};
+
 class Trie {
+protected:
+    std::vector<TrieNode> trie;
+
+public:
+    Trie() {
+    }
+};
+
+class Trie_binary {
     ///cod
 };
 

@@ -1,6 +1,4 @@
-#include <cstdint>
-#include <vector>
-#include <string>
+#include "data_structures.hpp"
 
 struct State {
     ///cod
@@ -123,5 +121,6 @@ void z_algorithm(std::string& s, std::string& t, std::vector<State>& states) {
 }
 
 void aho_corasick(std::string& s, std::vector<std::string>& v, std::vector<State>& states) {
+    int32_t n = static_cast<int32_t>(s.size());
     ///cod
 }
