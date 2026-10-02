@@ -1,25 +1,4 @@
-#include <cstdint>
-#include <vector>
-#include <string>
-
-struct State {
-    ///cod
-};
-
-void linear_search(std::vector<int32_t>& a, std::vector<State>& states) {
-    int32_t n = static_cast<int32_t>(a.size());
-    ///cod - nuj de exemplu pe cautare liniara ce sa fac
-}
-
-void binary_search(std::vector<int32_t>& a, std::vector<State>& states) {
-    int32_t n = static_cast<int32_t>(a.size());
-    ///cod - trb sa vad din nou de exemplu ca la ala liniar
-}
-
-void ternary_search(std::vector<int32_t>& a, std::vector<State>& states) {
-    int32_t n = static_cast<int32_t>(a.size());
-    ///cod - din nou acelasi exemplu
-}
+#include "../../core/states.hpp"
 
 void two_pointers_2sum_on_sorted_array(std::vector<int32_t>& a, int64_t target, std::vector<State>& states) {
     int32_t n = static_cast<int32_t>(a.size());
@@ -49,6 +28,9 @@ void two_pointers_palindrome_check_vector(std::vector<int32_t>& a, std::vector<S
             ok = false;
             break;
         }
+
+        l++;
+        r--;
     }
 }
 
@@ -62,10 +44,8 @@ void two_pointers_palindrome_check_string(std::string& s, std::vector<State>& st
             ok = false;
             break;
         }
-    }
-}
 
-void sliding_window(std::vector<int32_t>& a, std::vector<State>& states) {
-    int32_t n = static_cast<int32_t>(a.size());
-    ///cod - si aici trb sa vad un exemplu
+        l++;
+        r--;
+    }
 }

@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             ev.preventDefault();
-            target_elem.scrollIntoView({behaviour: smooth, block: start});
+            target_elem.scrollIntoView({behavior: smooth, block: start});
         });
     });
 });
